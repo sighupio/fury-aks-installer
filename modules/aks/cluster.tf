@@ -79,7 +79,13 @@ resource "azurerm_kubernetes_cluster" "aks" {
   private_cluster_enabled = true
 
   role_based_access_control {
-    enabled = false
+    enabled = true
+
+    azure_active_directory {
+      client_app_id     = azuread_application.aad_client.application_id
+      server_app_id     = azuread_application.aad_server.application_id
+      server_app_secret = azuread_service_principal_password.aad_server.value
+    }
   }
 
   lifecycle {
