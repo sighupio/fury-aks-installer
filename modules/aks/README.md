@@ -2,10 +2,10 @@
 
 | Name    | Version |
 | ------- | ------- |
-| azuread | >=0.8   |
-| azurerm | 2.5.0   |
+| azuread | >= 0.8  |
+| azurerm | >= 2.10 |
 | null    | >= 2.1  |
-| random  | >=2.2   |
+| random  | >= 2.2  |
 
 ## Inputs
 

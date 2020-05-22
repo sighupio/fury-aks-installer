@@ -76,8 +76,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   node_resource_group = "${data.azurerm_resource_group.aks.name}-nodes"
 
-  #private_cluster_enabled = true # 2.7
-  private_link_enabled = true # 2.5
+  private_cluster_enabled = true
 
   role_based_access_control {
     enabled = false
