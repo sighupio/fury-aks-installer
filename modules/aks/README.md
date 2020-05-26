@@ -1,11 +1,12 @@
 ## Providers
 
-| Name    | Version |
-| ------- | ------- |
-| azuread | >= 0.8  |
-| azurerm | >= 2.10 |
-| null    | >= 2.1  |
-| random  | >= 2.2  |
+| Name       | Version |
+| ---------- | ------- |
+| azuread    | >= 0.8  |
+| azurerm    | >= 2.10 |
+| kubernetes | >= 1.11 |
+| null       | >= 2.1  |
+| random     | >= 2.2  |
 
 ## Inputs
 
