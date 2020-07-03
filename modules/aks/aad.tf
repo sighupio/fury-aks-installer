@@ -106,7 +106,7 @@ resource "azuread_application" "aad_client" {
 
     resource_access {
       # Server app Oauth2 permissions id
-      id   = lookup(azuread_application.aad_server.oauth2_permissions[0], "id")
+      id   = lookup(element(tolist(azuread_application.aad_server.oauth2_permissions), 0), "id")
       type = "Scope"
     }
   }
