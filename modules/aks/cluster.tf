@@ -13,6 +13,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     enable_node_public_ip = false
     max_pods              = 250
     node_labels           = var.node_pools[0].labels
+    node_taints           = var.node_pools[0].taints
     type                  = "VirtualMachineScaleSets"
     os_disk_size_gb       = var.node_pools[0].volume_size
     vnet_subnet_id        = data.azurerm_subnet.subnetwork.id
@@ -113,6 +114,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "aks" {
   min_count             = element(var.node_pools, count.index + 1).min_size
   max_count             = element(var.node_pools, count.index + 1).max_size
   node_labels           = element(var.node_pools, count.index + 1).labels
+  node_taints           = element(var.node_pools, count.index + 1).taints
 }
 
 resource "null_resource" "aks" {
