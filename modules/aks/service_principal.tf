@@ -66,7 +66,7 @@ resource "azurerm_role_definition" "aks" {
 
 resource "azurerm_role_assignment" "aks_control_plane" {
   scope              = data.azurerm_subscription.current.id
-  role_definition_id = azurerm_role_definition.aks.id
+  role_definition_id = trimsuffix(azurerm_role_definition.aks.id, "|${azurerm_role_definition.aks.scope}")
   principal_id       = azuread_service_principal.aks.id
 
   depends_on = [azurerm_role_definition.aks]
