@@ -39,6 +39,7 @@ variable "node_pools" {
     volume_size   = number
     labels        = map(string)
     taints        = list(string)
+    tags          = map(string)
   }))
   default = []
 }
@@ -46,4 +47,10 @@ variable "node_pools" {
 variable "resource_group_name" {
   type        = string
   description = "Resource group name where every resource will be placed. Required only in AKS installer (*)"
+}
+
+variable "tags" {
+  type        = map
+  description = "The tags to apply to all resources"
+  default     = {}
 }

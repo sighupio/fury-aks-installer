@@ -19,6 +19,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     vnet_subnet_id        = data.azurerm_subnet.subnetwork.id
     min_count             = var.node_pools[0].min_size
     max_count             = var.node_pools[0].max_size
+    tags                  = merge(var.tags, var.node_pools[0].tags)
   }
 
   service_principal {
@@ -79,6 +80,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   private_cluster_enabled = true
 
+  tags = var.tags
+
   role_based_access_control {
     enabled = true
 
@@ -115,6 +118,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "aks" {
   max_count             = element(var.node_pools, count.index + 1).max_size
   node_labels           = element(var.node_pools, count.index + 1).labels
   node_taints           = element(var.node_pools, count.index + 1).taints
+  tags                  = merge(var.tags, element(var.node_pools, count.index + 1).tags)
 }
 
 resource "null_resource" "aks" {
