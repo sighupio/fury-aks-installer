@@ -5,6 +5,7 @@ network             = "aks-installer-local"
 subnetworks         = ["aks-installer-local-main"]
 ssh_public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCefFo9ASM8grncpLpJr+DAeGzTtoIaxnqSqrPeSWlCyManFz5M/DDkbnql8PdrENFU28blZyIxu93d5U0RhXZumXk1utpe0L/9UtImnOGG6/dKv9fV9vcJH45XdD3rCV21ZMG1nuhxlN0DftcuUubt/VcHXflBGaLrs18DrMuHVIbyb5WO4wQ9Od/SoJZyR6CZmIEqag6ADx4aFcdsUwK1Cpc51LhPbkdXGGjipiwP45q0I6/Brjxv/Kia1e+RmIRHiltsVBdKKTL9hqu9esbAod9I5BkBtbB5bmhQUVFZehi+d/opPvsIszE/coW5r/g/EVf9zZswebFPcsNr85+x"
 dmz_cidr_range      = "11.11.0.0/16"
+tags                = {}
 node_pools = [
   {
     name : "nodepool1"
@@ -18,6 +19,7 @@ node_pools = [
       "sighup.io/fury-release" : "v1.3.0"
     }
     taints : []
+    tags = {}
   },
   {
     name : "nodepool2"
@@ -30,5 +32,6 @@ node_pools = [
     taints : [
       "sighup.io/role=app:NoSchedule",
     ]
+    tags = {}
   }
 ]

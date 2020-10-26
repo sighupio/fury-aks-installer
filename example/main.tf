@@ -11,6 +11,7 @@ variable "dmz_cidr_range" {}
 variable "ssh_public_key" {}
 variable "node_pools" { type = list }
 variable "resource_group_name" {}
+variable "tags" { type = map }
 
 module "my-cluster" {
   source = "../modules/aks"
@@ -23,6 +24,7 @@ module "my-cluster" {
   dmz_cidr_range      = var.dmz_cidr_range
   node_pools          = var.node_pools
   resource_group_name = var.resource_group_name
+  tags                = var.tags
 }
 
 data "azurerm_kubernetes_cluster" "aks" {
