@@ -19,7 +19,8 @@ node_pools = [
       "sighup.io/fury-release" : "v1.3.0"
     }
     taints : []
-    tags = {}
+    tags : {}
+    max_pods : null
   },
   {
     name : "nodepool2"
@@ -32,6 +33,7 @@ node_pools = [
     taints : [
       "sighup.io/role=app:NoSchedule",
     ]
-    tags = {}
+    tags : {}
+    max_pods : null
   }
 ]
