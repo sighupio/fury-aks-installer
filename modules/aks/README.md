@@ -2,7 +2,7 @@
 
 | Name       | Version   |
 | ---------- | --------- |
-| kubernetes | >= 1.13.2 |
+| kubernetes |  = 1.13.3 |
 | azuread    | >= 1.0.0  |
 | azurerm    | >= 2.33.0 |
 | null       | >= 3.0.0  |
