@@ -19,8 +19,11 @@ variable "subnetworks" {
 }
 
 variable "dmz_cidr_range" {
-  type        = string
   description = "Network CIDR range from where cluster control plane will be accessible"
+}
+
+locals {
+  parsed_dmz_cidr_range = flatten([var.dmz_cidr_range])
 }
 
 variable "ssh_public_key" {
@@ -42,6 +45,14 @@ variable "node_pools" {
     labels        = map(string)
     taints        = list(string)
     tags          = map(string)
+    additional_firewall_rules = list(object({
+      name        = string
+      direction   = string
+      cidr_block  = string
+      protocol    = string
+      ports       = string
+      tags        = map(string)
+    }))
   }))
   default = []
 }
