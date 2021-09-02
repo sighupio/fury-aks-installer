@@ -179,7 +179,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "aks" {
   enable_node_public_ip = false
   max_pods              = element(var.node_pools, count.index + 1).max_pods != null ? element(var.node_pools, count.index + 1).max_pods : 250
   os_disk_size_gb       = element(var.node_pools, count.index + 1).volume_size
-  os_type               = "Linux"
+  os_type               = element(var.node_pools, count.index + 1).os != null ? element(var.node_pools, count.index + 1).os : "Linux"
   vnet_subnet_id        = element(data.azurerm_subnet.node_pools.*.id, index(var.node_pools.*.name, var.node_pools[count.index + 1].name))
   enable_auto_scaling   = true
   min_count             = element(var.node_pools, count.index + 1).min_size
