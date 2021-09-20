@@ -20,7 +20,7 @@ node_pools = [
     }
     taints : []
     tags : {}
-    max_pods : null
+    # max_pods : null
   },
   {
     name : "nodepool2"
@@ -34,6 +34,6 @@ node_pools = [
       "sighup.io/role=app:NoSchedule",
     ]
     tags : {}
-    max_pods : null
+    max_pods : 50
   }
 ]
