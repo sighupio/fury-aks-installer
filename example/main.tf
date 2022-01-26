@@ -3,60 +3,46 @@ provider "azurerm" {
   }
 }
 
-variable "cluster_name" {}
-variable "cluster_version" {}
-variable "network" {}
-variable "subnetworks" { type = list }
-variable "dmz_cidr_range" {}
-variable "ssh_public_key" {}
-variable "node_pools" { type = list }
-variable "resource_group_name" {}
-variable "tags" { type = map }
-
 module "my-cluster" {
   source = "../modules/aks"
 
-  cluster_version     = var.cluster_version
-  cluster_name        = var.cluster_name
-  network             = var.network
-  subnetworks         = var.subnetworks
-  ssh_public_key      = var.ssh_public_key
-  dmz_cidr_range      = var.dmz_cidr_range
-  node_pools          = var.node_pools
-  resource_group_name = var.resource_group_name
-  tags                = var.tags
-}
-
-data "azurerm_kubernetes_cluster" "aks" {
-  name                = var.cluster_name
-  resource_group_name = var.resource_group_name
-
-  depends_on = [
-    module.my-cluster,
+  cluster_version     = "1.16.9"
+  cluster_name        = "aks-installer"
+  network             = "aks-installer-local"
+  subnetworks         = ["aks-installer-local-main"]
+  ssh_public_key      = "ssh-rsa my-public-key"
+  dmz_cidr_range      = "11.11.0.0/16"
+  resource_group_name = "aks-installer"
+  tags                = {}
+  node_pools = [
+    {
+      name : "nodepool1"
+      version : null
+      min_size : 1
+      max_size : 1
+      instance_type : "Standard_DS2_v2"
+      volume_size : 100
+      labels : {
+        "sighup.io/role" : "app"
+        "sighup.io/fury-release" : "v1.3.0"
+      }
+      taints : []
+      tags : {}
+      # max_pods : null
+    },
+    {
+      name : "nodepool2"
+      version : null
+      min_size : 1
+      max_size : 1
+      instance_type : "Standard_DS2_v2"
+      volume_size : 50
+      labels : {}
+      taints : [
+        "sighup.io/role=app:NoSchedule",
+      ]
+      tags : {}
+      max_pods : 50
+    }
   ]
-}
-
-output "kubeconfig" {
-  sensitive = true
-  value     = <<EOT
-apiVersion: v1
-clusters:
-- cluster:
-    certificate-authority-data: ${module.my-cluster.cluster_certificate_authority}
-    server: ${module.my-cluster.cluster_endpoint}
-  name: aks
-contexts:
-- context:
-    cluster: aks
-    user: aks
-  name: aks
-current-context: aks
-kind: Config
-preferences: {}
-users:
-- name: aks
-  user:
-    client-certificate-data: ${data.azurerm_kubernetes_cluster.aks.kube_admin_config.0.client_certificate}
-    client-key-data: ${data.azurerm_kubernetes_cluster.aks.kube_admin_config.0.client_key}
-EOT
 }
