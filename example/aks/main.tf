@@ -4,7 +4,7 @@ provider "azurerm" {
 }
 
 module "my-cluster" {
-  source = "../modules/aks"
+  source = "../../modules/aks"
 
   cluster_version     = "1.16.9"
   cluster_name        = "aks-installer"
