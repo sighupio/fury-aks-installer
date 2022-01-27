@@ -27,7 +27,7 @@ Click on each module to see its full documentation.
 
 The AKS installers deploys and configures a production-ready AKS cluster without having to learn all internals of the service.
 
-<img src="./docs/assets/fury_installer_architecture.png?raw=true" width="600"/>
+![Fury Architecture](./docs/assets/fury_installer_architecture.png)
 
 The [AKS module][aks-module] deploys a **private control plane** cluster, where the control plane endpoint is not publicly accessible.
 
