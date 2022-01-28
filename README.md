@@ -25,13 +25,11 @@ Click on each module to see its full documentation.
 
 ## Architecture
 
-The AKS installers deploys and configures a production-ready AKS cluster without having to learn all internals of the service.
+**Fury AKS Installer** deploys and configures a production-ready AKS cluster without having to learn all internals of the service.
 
 ![Fury Architecture](./docs/assets/fury_installer_architecture.png)
 
 The [AKS module][aks-module] deploys a **private control plane** cluster, where the control plane endpoint is not publicly accessible.
-
-The [AKS module][aks-module] expects all the necessary networking infrastructure in place
 
 ## Usage
 
@@ -42,27 +40,36 @@ The [AKS module][aks-module] expects all the necessary networking infrastructure
 - **terraform** = `0.15.4`
 - `ssh` or **OpenVPN Client** - [Tunnelblick][tunnelblick] (on macOS) or [OpenVPN Connect][openvpn-connect] (for other OS) are recommended.
 
+The [AKS module][aks-module] expects all the necessary networking infrastructure in place:
+
+- A private network with a subnetwork for the AKS cluster and one for the bastion host
+- Bastion host with OpenVPN installed
+
+Please refer to the [example][example/networking] for the sample code to create the necessary infrastructure.
+
 ### Create AKS Cluster
 
-To create the cluster via the installers:
+To create the cluster via the installer:
 
-1. Use the [VPC and VPN module][vpc-vpn-module] to deploy the networking infrastructure
-2. Configure access to the OpenVPN instance of the bastion host via [furyagent][furyagent]
-3. Connect to the OpenVPN instance
-4. Use the [EKS module][eks-module] to deploy the EKS cluster
+1. Deploy the networking infrastructure and the bastion host
+2. Install OpenVPN on the bastion
+3. Configure access to the OpenVPN instance
+4. Connect to the OpenVPN instance
+5. Use the [AKS module][aks-module] to deploy the EKS cluster
 
 ⚠️ **The first time you try to create the cluster using the installer you will get an error.**
 
-This is expected because the installer is creating an application in order to use Azure Active Directory (AAD) for user authentication. Since this application will need to access AAD, a tenant admin must manually approve the requested API permissions as a security measure.
+This is expected because the installer is creating an application in order to use Azure Active Directory (AAD) for user authentication.
+Since this application will need to access AAD, a tenant admin must manually approve the requested API permissions as a security measure.
 
 To grant the application the needed permissions, go to the Azure Portal:
+
+![Azure Portal](docs/assets/azure_portal.png)
 
 1. Select Azure Active Directory > App registrations > All applications
 2. Choose the application named <cluster_name>-aks-aad-server
 3. In the left pane of the application, select API permissions
 4. Select Grant admin consent, this button will not be available if your account is not a tenant admin.
-
-Please refer to each module documentation and the [example](example/) folder for more details.
 
 ## Useful links
 
