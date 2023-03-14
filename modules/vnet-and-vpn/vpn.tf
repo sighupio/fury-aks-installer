@@ -32,8 +32,6 @@ locals {
   }
   sshkeys = templatefile("${path.module}/templates/ssh-users.yml", local.sshkeys_vars)
 }
-
-
 resource "azurerm_network_security_rule" "bastion_openvpn_tcp" {
   name                        = "bastion-openvpn-tcp"
   priority                    = 102
@@ -47,7 +45,6 @@ resource "azurerm_network_security_rule" "bastion_openvpn_tcp" {
   resource_group_name         = azurerm_resource_group.network_rg.name
   network_security_group_name = azurerm_network_security_group.vpn.name
 }
-
 resource "azurerm_network_security_rule" "bastion_openvpn_udp" {
   name                        = "bastion-openvpn-udp"
   priority                    = 103
@@ -61,19 +58,15 @@ resource "azurerm_network_security_rule" "bastion_openvpn_udp" {
   resource_group_name         = azurerm_resource_group.network_rg.name
   network_security_group_name = azurerm_network_security_group.vpn.name
 }
-
 # Furyagent
-
 resource "local_file" "furyagent" {
   content  = local.furyagent
   filename = "${path.root}/secrets/furyagent.yml"
 }
-
 resource "local_file" "sshkeys" {
   content  = local.sshkeys
   filename = "${path.root}/ssh-users.yml"
 }
-
 resource "null_resource" "init" {
   triggers = {
     "init" : "just-once",
@@ -82,7 +75,6 @@ resource "null_resource" "init" {
     command = "until `${local.local_furyagent} init openvpn --config ${local_file.furyagent.filename}`; do echo \"Retrying\"; sleep 30; done"
   }
 }
-
 resource "null_resource" "ssh_users" {
   triggers = {
     "sync-users" : join(",", local.users),
@@ -92,9 +84,7 @@ resource "null_resource" "ssh_users" {
     command = "until `${local.local_furyagent} init ssh-keys --config ${local_file.furyagent.filename}`; do echo \"Retrying\"; sleep 30; done"
   }
 }
-
 # Storage account
-
 resource "azurerm_storage_account" "furyagent" {
   name                      = var.furyagent_storage_account_name
   resource_group_name       = azurerm_resource_group.network_rg.name
@@ -104,7 +94,6 @@ resource "azurerm_storage_account" "furyagent" {
   account_replication_type  = "GRS"
   access_tier               = "Hot"
   enable_https_traffic_only = true
-
   tags = merge(
     var.tags,
     {
@@ -112,7 +101,6 @@ resource "azurerm_storage_account" "furyagent" {
     }
   )
 }
-
 resource "azurerm_storage_container" "furyagent" {
   name                  = "furyagent"
   storage_account_name  = azurerm_storage_account.furyagent.name
