@@ -1,7 +1,7 @@
 # Network
 module "network" {
-  source  = "Azure/network/azurerm"
-  version = "3.5.0"
+  source              = "Azure/network/azurerm"
+  version             = "3.5.0"
   vnet_name           = var.name
   address_space       = var.vnet_cidr[0]
   dns_servers         = []
