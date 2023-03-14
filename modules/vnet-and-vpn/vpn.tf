@@ -13,7 +13,7 @@ locals {
     openvpn_routes         = [{ "network" : cidrhost(var.network_cidr, 0), "netmask" : cidrnetmask(var.network_cidr) }, { "network" : "168.63.129.16", "netmask" : "255.255.255.255" }],
     openvpn_dns_servers    = ["168.63.129.16"], # Azure Private DNS IP
     openvpn_dhparam_bits   = var.vpn_dhparams_bits,
-    furyagent_version      = "v0.2.3"
+    furyagent_version      = "v0.3.0" //TODO: update to 0.3.0
     furyagent              = indent(6, local_file.furyagent.content),
   }
 

@@ -48,6 +48,8 @@ resource "azurerm_virtual_machine" "vpn-vm-linux" {
   }
   os_profile_linux_config {
     disable_password_authentication = true
+    //TODO: TBD with samuele (check if we going to use ssh keys with furyagent)
+
     ssh_keys {
       key_data = file(var.ssh_key)
       path     = "/home/${var.admin_username}/.ssh/authorized_keys"

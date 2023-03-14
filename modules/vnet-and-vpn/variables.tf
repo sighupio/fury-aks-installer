@@ -4,9 +4,9 @@ variable "environment" {
   default     = "development"
 }
 variable "vnet_cidr" {
-  type        = list(string)
+  type        = string
   description = "The CIDR block for the VPC network"
-  default     = ["10.100.0.0/16"]
+  default     = "10.100.0.0/16"
 }
 # Azure location variable
 variable "location" {
@@ -103,4 +103,10 @@ variable "source_address_prefixes" {
   description = "(Optional) List of source address prefixes allowed to access var.remote_port."
   type        = list(string)
   default     = ["0.0.0.0/0"]
+}
+
+variable "enforce_private_link" {
+  type        = bool
+  description = "(Optional) Enable or Disable boot diagnostics."
+  default     = true
 }
