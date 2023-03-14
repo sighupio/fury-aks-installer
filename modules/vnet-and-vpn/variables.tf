@@ -119,15 +119,6 @@ variable "vm_size" {
   default     = "Standard_B2s"
 }
 
-
-variable "nb_public_ip" {
-  description = "Number of public IPs to assign corresponding to one IP per vm. Set to 0 to not assign any public IP addresses."
-  type        = number
-  default     = 1
-}
-
-
-
 variable "boot_diagnostics" {
   type        = bool
   description = "(Optional) Enable or Disable boot diagnostics."

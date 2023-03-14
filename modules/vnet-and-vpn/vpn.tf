@@ -21,8 +21,9 @@ locals {
     azure_storage_account = azurerm_storage_account.furyagent.name,
     azure_storage_key     = azurerm_storage_account.furyagent.primary_access_key,
     bucketName            = azurerm_storage_container.furyagent.name,
-    servers               = [for serverIP in azurerm_public_ip.vpn.*.ip_address : "${serverIP}:${var.vpn_port}"]
-    user                  = var.vpn_operator_name,
+    servers               = [for serverIP in azurerm_public_ip.vpn[*].ip_address : "${serverIP}:${var.vpn_port}"]
+
+    user = var.vpn_operator_name,
   }
   furyagent = templatefile("${path.module}/templates/furyagent.yml", local.furyagent_vars)
   users     = var.vpn_ssh_users

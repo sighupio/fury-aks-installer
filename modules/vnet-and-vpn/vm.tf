@@ -97,13 +97,6 @@ resource "azurerm_public_ip" "vpn" {
   }
 }
 
-// Dynamic public ip address will be got after it's assigned to a vm
-data "azurerm_public_ip" "vpn" {
-  name                = azurerm_public_ip.vpn.name
-  resource_group_name = azurerm_resource_group.network_rg.name
-  depends_on          = [azurerm_virtual_machine.vpn-vm-linux]
-}
-
 resource "azurerm_network_security_group" "vpn" {
   name                = "${var.name}-nsg"
   resource_group_name = azurerm_resource_group.network_rg.name

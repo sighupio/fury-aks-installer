@@ -6,7 +6,8 @@
 
 output "vpn_ip" {
   description = "VPN instance IP"
-  value       = azurerm_public_ip.vpn.*.ip_address
+  value       = azurerm_public_ip.vpn[*].ip_address
+
 }
 
 output "vnet_id" {
