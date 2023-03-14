@@ -1,0 +1,19 @@
+storage:
+  provider: azure
+  azure_storage_account: ${azure_storage_account}
+  azure_storage_key: ${azure_storage_key}
+  bucketName: ${bucketName}
+clusterComponent:
+  openvpn:
+    certDir: /etc/openvpn/pki
+    servers: %{ if length(servers) == 0 ~} []%{ else }
+%{ for server in servers ~}
+      - ${server}
+%{ endfor ~}
+%{ endif }
+  sshkeys:
+    user: ${user}
+    tempDir: /var/lib/SIGHUP/tmp
+    localDirConfigs: "."
+    adapter:
+      name: github
