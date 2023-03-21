@@ -12,3 +12,23 @@ output "terraform_state_storage_account" {
 output "terraform_state_storage_container_core" {
   value = azurerm_storage_container.core-container.name
 }
+
+locals {
+  provider_configuration = <<EOF
+  terraform {
+    required_version = "= 0.15.4"
+    backend "azurerm" {
+      resource_group_name  = ${azurerm_resource_group.state-rg.name}
+      storage_account_name = ${azurerm_storage_account.state-sta.name}
+      container_name       = ${azurerm_storage_container.core-container.name}
+      key                  = ${azurerm_storage_account.state-sta.name}-core.tfstate
+    }
+  }
+  EOF
+  variable_files = <<EOF
+  resource_group_name = ${azurerm_resource_group.state-rg.name}
+  storage_account_name = ${azurerm_storage_account.state-sta.name}
+  container_name = ${azurerm_storage_container.core-container.name}
+  key = ${azurerm_storage_account.state-sta.name}-core.tfstate
+  EOF
+}
