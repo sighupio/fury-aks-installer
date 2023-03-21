@@ -1,3 +1,16 @@
+# Terraform configuration file
+# Specifies the required version of Terraform and the required providers
+# 
+# Terraform Version: 0.15.4
+# azurerm Provider Version: 3.44.1
+# local Provider Version: 2.0.0
+# null Provider Version: 3.0.0
+# external Provider Version: 2.0.0
+# template Provider Version: 2.2.0
+# random Provider Version: 3.4.3
+#
+# Features block is empty
+
 terraform {
   required_version = "= 0.15.4"
   required_providers {
@@ -27,6 +40,7 @@ terraform {
     }
   }
 }
+
 provider "azurerm" {
   # Configuration options
   features {}

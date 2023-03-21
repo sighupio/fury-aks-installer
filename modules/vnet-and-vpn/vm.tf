@@ -18,12 +18,13 @@ resource "azurerm_storage_account" "vpn-sa" {
   tags                     = var.tags
 }
 resource "azurerm_virtual_machine" "vpn-vm-linux" {
-  name                             = "${var.name}-bastion"
+  name                             = "${var.name}-bastion-${count.index}"
+  count                            = var.vpn_bastions
   resource_group_name              = azurerm_resource_group.network_rg.name
   location                         = azurerm_resource_group.network_rg.location
   availability_set_id              = azurerm_availability_set.vm.id
   vm_size                          = var.vm_size
-  network_interface_ids            = [azurerm_network_interface.vpn.id]
+  network_interface_ids            = [element(azurerm_network_interface.vpn.*.id, count.index)]
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = false
   storage_image_reference {
@@ -33,7 +34,7 @@ resource "azurerm_virtual_machine" "vpn-vm-linux" {
     version   = "latest"
   }
   storage_os_disk {
-    name                      = "osdisk-${var.name}-bastion"
+    name                      = "osdisk-${var.name}-bastion-${count.index}"
     caching                   = "ReadWrite"
     create_option             = "FromImage"
     disk_size_gb              = 30
@@ -42,7 +43,7 @@ resource "azurerm_virtual_machine" "vpn-vm-linux" {
     write_accelerator_enabled = false
   }
   os_profile {
-    computer_name  = "${var.name}-bastion"
+    computer_name  = "${var.name}-bastion-${count.index}"
     admin_username = var.admin_username
     custom_data    = templatefile("${path.module}/templates/vpn.yml", local.vpntemplate_vars)
   }
@@ -74,7 +75,8 @@ resource "azurerm_availability_set" "vm" {
   }
 }
 resource "azurerm_public_ip" "vpn" {
-  name                = "${var.name}-pip"
+  count               = var.vpn_bastions
+  name                = "${var.name}-pip-${count.index}"
   resource_group_name = azurerm_resource_group.network_rg.name
   location            = azurerm_resource_group.network_rg.location
   allocation_method   = "Static"
@@ -123,7 +125,8 @@ resource "azurerm_network_security_rule" "open-vpn" {
   network_security_group_name = azurerm_network_security_group.vpn.name
 }
 resource "azurerm_network_interface" "vpn" {
-  name                          = "${var.name}-nic"
+  count                         = var.vpn_bastions
+  name                          = "${var.name}-nic-${count.index}"
   resource_group_name           = azurerm_resource_group.network_rg.name
   location                      = azurerm_resource_group.network_rg.location
   enable_accelerated_networking = false
@@ -131,7 +134,7 @@ resource "azurerm_network_interface" "vpn" {
     name                          = "${var.name}-ip"
     subnet_id                     = module.network.vnet_subnets[0]
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.vpn.id
+    public_ip_address_id          = length(azurerm_public_ip.vpn.*.id) > 0 ? element(concat(azurerm_public_ip.vpn.*.id, tolist([""])), count.index) : ""
   }
   tags = {
     environment = var.environment
@@ -142,6 +145,7 @@ resource "azurerm_network_interface" "vpn" {
   ]
 }
 resource "azurerm_network_interface_security_group_association" "vpn" {
-  network_interface_id      = azurerm_network_interface.vpn.id
+  count                     = var.vpn_bastions
+  network_interface_id      = azurerm_network_interface.vpn[count.index].id
   network_security_group_id = azurerm_network_security_group.vpn.id
 }

@@ -107,6 +107,12 @@ variable "source_address_prefixes" {
 
 variable "enforce_private_link" {
   type        = bool
-  description = "(Optional) Enable or Disable boot diagnostics."
+  description = "(Optional) Enable or Disable enforcing private link connections."
   default     = true
+}
+
+variable "vpn_bastions" {
+  type        = number
+  description = "Number of bastions to be deployed"
+  default     = 2
 }
