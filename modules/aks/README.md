@@ -8,21 +8,17 @@
 
 | Name | Version |
 |------|---------|
-| terraform | 0.15.4 |
-| azuread | 1.5.0 |
-| azurerm | 2.60.0 |
-| kubernetes | 1.13.3 |
-| null | 3.1.0 |
-| random | 3.1.0 |
+| terraform | `>=1.3.0` |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
-| azuread | 1.5.0 |
-| azurerm | 2.60.0 |
-| null | 3.1.0 |
-| random | 3.1.0 |
+|------|--------|
+|kubernetes | `~>1.13.4`|
+|azuread    | `~>1.5.1`|
+|azurerm    | `~>2.60.0`|
+|random     | `~>3.1.3`|
+|null       | `~>3.1.`|
 
 ## Inputs
 
@@ -52,6 +48,19 @@
 provider "azurerm" {
   features {
   }
+}
+
+provider "kubernetes" {
+  host = module.my-cluster.kubeconfig.host
+  client_certificate = base64decode(
+    module.my-cluster.kubeconfig.client_certificate,
+  )
+  client_key = base64decode(
+    module.my-cluster.kubeconfig.client_key,
+  )
+  cluster_ca_certificate = base64decode(
+    module.my-cluster.kubeconfig.cluster_ca_certificate,
+  )
 }
 
 module "my-cluster" {

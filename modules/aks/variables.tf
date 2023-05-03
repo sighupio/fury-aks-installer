@@ -14,7 +14,7 @@ variable "network" {
 }
 
 variable "subnetworks" {
-  type        = list
+  type        = list(string)
   description = "List of subnets where the cluster will be hosted"
 }
 
@@ -42,18 +42,22 @@ variable "node_pools" {
     os            = optional(string)
     max_pods      = optional(number) # null to use default upstream configuration
     volume_size   = number
-    subnetworks   = list(string) # null to use default upstream configuration
+    subnetworks   = optional(list(string), []) # null to use default upstream configuration
     labels        = map(string)
     taints        = list(string)
     tags          = map(string)
-    additional_firewall_rules = list(object({
-      name        = string
-      direction   = string
-      cidr_block  = string
-      protocol    = string
-      ports       = string
-      tags        = map(string)
-    }))
+    additional_firewall_rules = optional(
+      list(
+        object({
+          name       = string
+          direction  = string
+          cidr_block = string
+          protocol   = string
+          ports      = string
+          tags       = map(string)
+        })
+      ),
+    [])
   }))
   default = []
 }
@@ -64,7 +68,7 @@ variable "resource_group_name" {
 }
 
 variable "tags" {
-  type        = map
+  type        = map(string)
   description = "The tags to apply to all resources"
   default     = {}
 }

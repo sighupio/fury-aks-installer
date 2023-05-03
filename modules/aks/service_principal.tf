@@ -1,5 +1,5 @@
 resource "azuread_application" "aks" {
-  name = var.cluster_name
+  display_name = var.cluster_name
 }
 
 resource "azuread_service_principal" "aks" {

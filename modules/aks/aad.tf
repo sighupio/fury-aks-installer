@@ -1,5 +1,5 @@
 resource "azuread_application" "aad_server" {
-  name = "${var.cluster_name}-aks-aad-server"
+  display_name = "${var.cluster_name}-aks-aad-server"
 
   reply_urls = [
     "http://${var.cluster_name}-aks-aad-server",
@@ -76,7 +76,7 @@ resource "azuread_service_principal_password" "aad_server" {
 }
 
 resource "azuread_application" "aad_client" {
-  name = "${var.cluster_name}-aks-aad-client"
+  display_name = "${var.cluster_name}-aks-aad-client"
 
   reply_urls = [
     "http://${var.cluster_name}-aks-aad-client",
