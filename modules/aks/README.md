@@ -25,14 +25,14 @@
 | Name | Description | Default | Required |
 |------|-------------|---------|:--------:|
 | cluster\_name | Unique cluster name. Used in multiple resources to identify your cluster resources | n/a | yes |
-| cluster\_version | Kubernetes Cluster Version. Look at the cloud providers documentation to discover available versions. EKS example -> 1.16, GKE example -> 1.16.8-gke.9 | n/a | yes |
+| cluster\_version | Kubernetes Cluster Version. Look at the cloud providers documentation to discover available versions. EKS example -> 1.25, GKE example -> 1.25.7-gke.1000 | n/a | yes |
 | dmz\_cidr\_range | Network CIDR range from where cluster control plane will be accessible | n/a | yes |
 | network | Network where the Kubernetes cluster will be hosted | n/a | yes |
 | node\_pools | An object list defining node pools configurations | `[]` | no |
 | resource\_group\_name | Resource group name where every resource will be placed. Required only in AKS installer (*) | n/a | yes |
 | ssh\_public\_key | Cluster administrator public ssh key. Used to access cluster nodes with the operator\_ssh\_user | n/a | yes |
 | subnetworks | List of subnets where the cluster will be hosted | n/a | yes |
-| tags | The tags to apply to all resources | `{}` | no |  
+| tags | The tags to apply to all resources | `{}` | no |
 
 ## Outputs
 
@@ -51,19 +51,19 @@ provider "azurerm" {
 }
 
 provider "kubernetes" {
-  host = module.my-cluster.kubeconfig.host
+  host = module.my_cluster.kubeconfig.host
   client_certificate = base64decode(
-    module.my-cluster.kubeconfig.client_certificate,
+    module.my_cluster.kubeconfig.client_certificate,
   )
   client_key = base64decode(
-    module.my-cluster.kubeconfig.client_key,
+    module.my_cluster.kubeconfig.client_key,
   )
   cluster_ca_certificate = base64decode(
-    module.my-cluster.kubeconfig.cluster_ca_certificate,
+    module.my_cluster.kubeconfig.cluster_ca_certificate,
   )
 }
 
-module "my-cluster" {
+module "my_cluster" {
   source = "../../modules/aks"
 
   cluster_version     = "1.16.9"

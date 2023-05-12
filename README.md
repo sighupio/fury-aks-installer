@@ -45,7 +45,7 @@ The [AKS module][aks-module] expects all the necessary networking infrastructure
 - A private network with a subnetwork for the AKS cluster and one for the bastion host
 - Bastion host with OpenVPN installed
 
-Please refer to the [example][example/networking] for the sample code to create the necessary infrastructure.
+Please refer to the [examples][examples/networking] for the sample code to create the necessary infrastructure.
 
 ### Create AKS Cluster
 

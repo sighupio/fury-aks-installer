@@ -1,20 +1,11 @@
-data "azurerm_kubernetes_cluster" "aks" {
-  name                = "aks-installer"
-  resource_group_name = "aks-installer"
-
-  depends_on = [
-    module.my-cluster,
-  ]
-}
-
 output "kubeconfig" {
   sensitive = true
   value     = <<EOT
 apiVersion: v1
 clusters:
 - cluster:
-    certificate-authority-data: ${module.my-cluster.cluster_certificate_authority}
-    server: ${module.my-cluster.cluster_endpoint}
+    certificate-authority-data: ${module.my_cluster.cluster_certificate_authority}
+    server: ${module.my_cluster.cluster_endpoint}
   name: aks
 contexts:
 - context:

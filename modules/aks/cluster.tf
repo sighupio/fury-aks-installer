@@ -13,9 +13,15 @@ data "azurerm_subnet" "node_pools" {
   resource_group_name  = data.azurerm_resource_group.aks.name
 }
 
+resource "azurerm_network_security_group" "aks" {
+  name                = "furyAksSecurityGroup"
+  location            = data.azurerm_resource_group.aks.location
+  resource_group_name = data.azurerm_resource_group.aks.name
+}
+
 # Security Rule enabling local.parsed_dmz_cidr_range to access the control plane endpoint. Cloud Installers v1.5.0
 resource "azurerm_network_security_rule" "aks" {
-  name                         = "${var.cluster_name} - Control Plane"
+  name                         = "${var.cluster_name}-control-plane"
   priority                     = 200
   direction                    = "Inbound"
   access                       = "Allow"
@@ -25,7 +31,7 @@ resource "azurerm_network_security_rule" "aks" {
   source_address_prefixes      = local.parsed_dmz_cidr_range
   destination_address_prefixes = data.azurerm_subnet.aks.address_prefixes
   resource_group_name          = data.azurerm_resource_group.aks.name
-  network_security_group_name  = element(split("/", data.azurerm_subnet.aks.network_security_group_id), length(split("/", data.azurerm_subnet.aks.network_security_group_id)) - 1)
+  network_security_group_name  = azurerm_network_security_group.aks.name
 }
 
 # Custom firewall rules v1.5.0 in the cloud installers
@@ -43,7 +49,7 @@ locals {
         source_address_prefixes      = rule.direction == "ingress" ? [rule.cidr_block] : element(data.azurerm_subnet.node_pools.*.address_prefixes, index(var.node_pools.*.name, nodePool.name))
         destination_address_prefixes = rule.direction == "egress" ? [rule.cidr_block] : element(data.azurerm_subnet.node_pools.*.address_prefixes, index(var.node_pools.*.name, nodePool.name))
         resource_group_name          = data.azurerm_resource_group.aks.name
-        network_security_group_name  = element(split("/", element(data.azurerm_subnet.node_pools.*.network_security_group_id, index(var.node_pools.*.name, nodePool.name))), length(split("/", element(data.azurerm_subnet.node_pools.*.network_security_group_id, index(var.node_pools.*.name, nodePool.name)))) - 1)
+        network_security_group_name  = azurerm_network_security_group.aks.name
       }]
       ]
     ]
