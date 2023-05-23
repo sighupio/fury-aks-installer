@@ -1,30 +1,7 @@
-resource "azuread_application" "aks" {
-  display_name = var.cluster_name
-}
-
-resource "azuread_service_principal" "aks" {
-  application_id = azuread_application.aks.application_id
-}
-
-resource "random_string" "aks" {
-  length  = 16
-  special = true
-
-  keepers = {
-    service_principal = azuread_service_principal.aks.id
-  }
-}
-
-resource "azuread_service_principal_password" "aks" {
-  service_principal_id = azuread_service_principal.aks.id
-  value                = random_string.aks.result
-  end_date             = timeadd(timestamp(), "8760h")
-
-  # This stops be 'end_date' changing on each run and causing a new password to be set
-  # to get the date to change here you would have to manually taint this resource...
-  lifecycle {
-    ignore_changes = [end_date]
-  }
+resource "azurerm_user_assigned_identity" "aks" {
+  name                = var.cluster_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
 }
 
 # Attempt to create a 'least privilidge' role for SP used by AKS
@@ -67,7 +44,7 @@ resource "azurerm_role_definition" "aks" {
 resource "azurerm_role_assignment" "aks_control_plane" {
   scope              = data.azurerm_subscription.current.id
   role_definition_id = trimsuffix(azurerm_role_definition.aks.id, "|${azurerm_role_definition.aks.scope}")
-  principal_id       = azuread_service_principal.aks.id
+  principal_id       = azurerm_user_assigned_identity.aks.principal_id
 
   depends_on = [azurerm_role_definition.aks]
 }
@@ -75,5 +52,5 @@ resource "azurerm_role_assignment" "aks_control_plane" {
 resource "azurerm_role_assignment" "aks_network" {
   scope                = data.azurerm_subscription.current.id
   role_definition_name = "Network Contributor"
-  principal_id         = azuread_service_principal.aks.id
+  principal_id         = azurerm_user_assigned_identity.aks.principal_id
 }

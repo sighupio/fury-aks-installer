@@ -8,6 +8,11 @@ variable "cluster_version" {
   description = "Kubernetes Cluster Version. Look at the cloud providers documentation to discover available versions. EKS example -> 1.25, GKE example -> 1.25.7-gke.1000"
 }
 
+variable "network_resource_group_name" {
+  type        = string
+  description = "Resource group where Network is located"
+}
+
 variable "network" {
   type        = string
   description = "Network where the Kubernetes cluster will be hosted"
@@ -65,6 +70,17 @@ variable "node_pools" {
 variable "resource_group_name" {
   type        = string
   description = "Resource group name where every resource will be placed. Required only in AKS installer (*)"
+}
+
+variable "location" {
+  type        = string
+  description = "Resource group location where every resource will be placed. Required only in AKS installer (*)"
+}
+
+variable "admin_group_object_ids" {
+  type        = list(string)
+  description = "User or group to be enabled as admin"
+  default     = []
 }
 
 variable "tags" {

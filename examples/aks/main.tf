@@ -1,9 +1,7 @@
 terraform {
   required_version = "~> 1.4"
   required_providers {
-    kubernetes = "~> 1.13.4"
-    azuread    = "~> 1.6.0"
-    azurerm    = "~> 2.99.0"
+    azurerm    = "3.44.1"
     random     = "~> 3.5.1"
     null       = "~> 3.2.1"
   }
@@ -14,26 +12,8 @@ provider "azurerm" {
   }
 }
 
-provider "kubernetes" {
-  host = data.azurerm_kubernetes_cluster.aks.kube_admin_config.0.host
-  client_certificate = base64decode(
-    data.azurerm_kubernetes_cluster.aks.kube_admin_config.0.client_certificate,
-  )
-  client_key = base64decode(
-    data.azurerm_kubernetes_cluster.aks.kube_admin_config.0.client_key,
-  )
-  cluster_ca_certificate = base64decode(
-    data.azurerm_kubernetes_cluster.aks.kube_admin_config.0.cluster_ca_certificate,
-  )
-}
-
-data "azurerm_kubernetes_cluster" "aks" {
-  name                = "aks-installer"
-  resource_group_name = var.resource_group_name
-
-  depends_on = [
-    module.my_cluster,
-  ]
+data "azurerm_resource_group" "network" {
+  name = "aks-installer-network-rg"
 }
 
 module "my_cluster" {
@@ -41,11 +21,13 @@ module "my_cluster" {
 
   cluster_version     = "1.25.6"
   cluster_name        = "aks-installer"
+  network_resource_group_name = data.azurerm_resource_group.network.name
   network             = var.network
   subnetworks         = var.subnetworks
-  ssh_public_key      = var.ssh_public_key
+  ssh_public_key      = file("~/.ssh/id_rsa.pub")
   dmz_cidr_range      = "11.11.0.0/16"
   resource_group_name = var.resource_group_name
+  location = var.location
   tags                = {}
   node_pools = [
     {
@@ -78,4 +60,19 @@ module "my_cluster" {
       max_pods : 50
     }
   ]
+}
+
+data "azurerm_client_config" "current" {
+
+}
+
+data "azurerm_subscription" "current" {
+
+}
+
+# This gives the connected user the admin role on the cluster (it's not the admin kubeconfig)
+resource "azurerm_role_assignment" "aks-admin" {
+  role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
+  principal_id = data.azurerm_client_config.current.object_id
+  scope = data.azurerm_subscription.current.id
 }
