@@ -1,7 +1,7 @@
 # Network
 module "network" {
   source              = "Azure/network/azurerm"
-  version             = "3.5.0"
+  version             = "5.2.0"
   vnet_name           = var.name
   address_space       = var.vnet_cidr
   dns_servers         = []
@@ -15,4 +15,5 @@ module "network" {
   depends_on = [
     azurerm_resource_group.network_rg
   ]
+  use_for_each = false
 }

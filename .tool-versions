@@ -1,6 +1,3 @@
-kustomize 3.5.4
-terraform 0.15.4
-kubectl 1.23.15
-furyctl 0.9.0
-stern 1.14.0
-kubent 0.7.0
+terraform 1.4.6
+terraform-docs 0.16.0
+azure-cli 2.48.1
