@@ -1,5 +1,0 @@
-.terraform
-secrets
-.terraform.lock.hcl
-ssh-users.yml
-*.ovpn

@@ -1,6 +1,5 @@
 name = "fury"
 vnet_cidr = "10.100.0.0/16"
-resource_group_name = "fury"
 ssh_public_key_path = ""
 tags = {
     distribution = "fury"
