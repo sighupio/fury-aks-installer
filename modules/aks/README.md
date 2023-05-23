@@ -41,6 +41,9 @@
 |------|-------------|
 | kubeconfig\_admin | The raw kubeconfig for admin user. Ready to be exported to file. |
 | kubeconfig | The raw kubeconfig for any user. Ready to be exported to file. |
+| cluster\_certificate\_authority | The base64 encoded certificate data required to communicate with your cluster. Add this to the certificate-authority-data section of the kubeconfig file for your cluster |
+| cluster\_endpoint | The endpoint for your Kubernetes API server |
+| operator\_ssh\_user | SSH user to access cluster nodes with ssh\_public\_key |
 
 ## Usage
 
