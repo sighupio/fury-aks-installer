@@ -1,8 +1,3 @@
-variable "environment" {
-  type        = string
-  description = "This variable defines the environment to be built"
-  default     = "development"
-}
 variable "vnet_cidr" {
   type        = string
   description = "The CIDR block for the VPC network"
@@ -18,12 +13,6 @@ variable "location" {
 variable "name" {
   description = "Name of the resources. Used as cluster name"
   type        = string
-  default     = "poc-fury"
-}
-variable "furyagent_storage_account_name" {
-  description = "Furyagent Storage Account Name. Can only consist of lowercase letters and numbers, and must be between 3 and 24 characters long"
-  type        = string
-  default     = "furyagentstorage2"
 }
 variable "network_cidr" {
   description = "VPC Network CIDR"
@@ -56,14 +45,14 @@ variable "vpn_operator_name" {
   default     = "sighup"
 }
 variable "vpn_dhparams_bits" {
-  description = "Diffie–Hellman (D-H) key size in bytes"
+  description = "Diffie-Hellman (D-H) key size in bytes"
   type        = number
   default     = 2048
 }
 variable "vpn_ssh_users" {
   description = "GitHub users id to sync public rsa keys. Example angelbarrera92"
   type        = list(string)
-  default     = ["smerlos"]
+  default     = []
 }
 variable "ssh_key" {
   description = "SSH public key file path for the virtual machine"

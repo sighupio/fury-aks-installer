@@ -56,10 +56,7 @@ resource "azurerm_virtual_machine" "vpn-vm-linux" {
       path     = "/home/${var.admin_username}/.ssh/authorized_keys"
     }
   }
-  tags = {
-    environment = var.environment
-    name        = var.name
-  }
+  tags = var.tags
 
 }
 resource "azurerm_availability_set" "vm" {
@@ -69,10 +66,7 @@ resource "azurerm_availability_set" "vm" {
   platform_fault_domain_count  = 2
   platform_update_domain_count = 2
   managed                      = true
-  tags = {
-    environment = var.environment
-    name        = var.name
-  }
+  tags                         = var.tags
 }
 resource "azurerm_public_ip" "vpn" {
   count               = var.vpn_bastions
@@ -81,19 +75,13 @@ resource "azurerm_public_ip" "vpn" {
   location            = azurerm_resource_group.network_rg.location
   allocation_method   = "Static"
   sku                 = "Basic"
-  tags = {
-    environment = var.environment
-    name        = var.name
-  }
+  tags                = var.tags
 }
 resource "azurerm_network_security_group" "vpn" {
   name                = "${var.name}-nsg"
   resource_group_name = azurerm_resource_group.network_rg.name
   location            = azurerm_resource_group.network_rg.location
-  tags = {
-    environment = var.environment
-    name        = var.name
-  }
+  tags                = var.tags
 }
 resource "azurerm_network_security_rule" "vpn" {
   count                       = var.remote_port != "" ? 1 : 0
@@ -136,10 +124,7 @@ resource "azurerm_network_interface" "vpn" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = length(azurerm_public_ip.vpn.*.id) > 0 ? element(concat(azurerm_public_ip.vpn.*.id, tolist([""])), count.index) : ""
   }
-  tags = {
-    environment = var.environment
-    name        = var.name
-  }
+  tags = var.tags
   depends_on = [
     module.network.vnet_subnets
   ]

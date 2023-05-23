@@ -86,7 +86,7 @@ resource "null_resource" "ssh_users" {
 }
 # Storage account
 resource "azurerm_storage_account" "furyagent" {
-  name                      = var.furyagent_storage_account_name
+  name                      = replace("${var.name}furyagent","-","")
   resource_group_name       = azurerm_resource_group.network_rg.name
   location                  = azurerm_resource_group.network_rg.location
   account_kind              = "BlobStorage"

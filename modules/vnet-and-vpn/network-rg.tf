@@ -15,8 +15,5 @@ resource "azurerm_resource_group" "network_rg" {
   #   prevent_destroy = true
   # }
 
-  tags = {
-    environment = var.environment
-    name        = var.name
-  }
+  tags = var.tags
 }
