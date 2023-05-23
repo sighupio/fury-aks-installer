@@ -1,0 +1,4 @@
+resource_group_name = "fury"
+ssh_public_key = ""
+network = "fury"
+subnetworks = ["fury-bastion", "fury-aks"]
