@@ -14,6 +14,10 @@ export ARM_TENANT_ID="<azure_subscription_tenant_id>"
 export ARM_CLIENT_ID="<service_principal_appid>"
 export ARM_CLIENT_SECRET="<service_principal_password>"
 
+# Or you can login using Azure CLI and (in case) switch to your target subscription
+az login
+az account set -s "<azure_subscription_id>"
+
 # Bring up the network and bastion
 cd examples/networking
 cp main.auto.tfvars.dist main.auto.tfvars
@@ -26,7 +30,7 @@ furyagent configure openvpn-client --config=./secrets/furyagent.yml --client-nam
 # TASK: import the generated /tmp/fury-example-test.ovpn in the openvpn client of your choice and turn it on.
 
 # Bring up the kubernetes cluster
-cd ../gke
+cd ../aks
 terraform init
 terraform apply
 

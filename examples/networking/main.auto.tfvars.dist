@@ -1,6 +1,6 @@
 name = "fury"
 vnet_cidr = "10.100.0.0/16"
-ssh_public_key_path = ""
+ssh_public_key_path = "~/.ssh/id_rsa.pub"
 tags = {
     distribution = "fury"
     environment = "example"

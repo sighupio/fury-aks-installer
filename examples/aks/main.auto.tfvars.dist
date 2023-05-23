@@ -1,4 +1,4 @@
-resource_group_name = "fury"
-ssh_public_key = ""
+resource_group_name = "fury-aks-rg"
 network = "fury"
-subnetworks = ["fury-bastion", "fury-aks"]
+subnetworks = ["fury-aks"]
+location = "westeurope"

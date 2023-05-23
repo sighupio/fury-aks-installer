@@ -1,7 +1,7 @@
 variable "name" {
   type        = string
   description = "Common project name"
-  default = "aks-installer"
+  default = "fury"
 }
 
 variable "vnet_cidr" {
