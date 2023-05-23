@@ -1,19 +1,19 @@
 variable "network" {
-  type = string
+  type    = string
   default = "aks-installer"
 }
 
 variable "subnetworks" {
-  type = list(string)
+  type    = list(string)
   default = ["aks-installer-aks"]
 }
 
 variable "resource_group_name" {
-  type = string
+  type    = string
   default = "aks-installer-aks-rg"
 }
 
 variable "location" {
-  type = string
+  type    = string
   default = "westeurope"
 }
