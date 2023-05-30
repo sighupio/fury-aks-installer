@@ -31,6 +31,8 @@ furyagent configure openvpn-client --config=./secrets/furyagent.yml --client-nam
 
 # Bring up the kubernetes cluster
 cd ../aks
+cp main.auto.tfvars.dist main.auto.tfvars
+# TASK: fill in main.auto.tfvars with your data
 terraform init
 terraform apply
 
