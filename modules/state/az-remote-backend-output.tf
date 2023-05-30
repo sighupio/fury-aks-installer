@@ -16,7 +16,7 @@ output "terraform_state_storage_container_core" {
 locals {
   provider_configuration = <<EOF
   terraform {
-    required_version = "= 0.15.4"
+    required_version = ">= 1.3"
     backend "azurerm" {
       resource_group_name  = ${azurerm_resource_group.state-rg.name}
       storage_account_name = ${azurerm_storage_account.state-sta.name}

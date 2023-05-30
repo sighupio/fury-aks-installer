@@ -14,7 +14,7 @@
 
 | Name | Version |
 |------|--------|
-|azurerm    | `~>3.44.1`|
+|azurerm    | `~>3.44`|
 |random     | `~>3.5`|
 |null       | `~>3.2`|
 

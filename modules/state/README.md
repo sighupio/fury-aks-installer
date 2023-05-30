@@ -1,6 +1,6 @@
 <!-- BEGIN_TF_DOCS -->
 
-# Fury EKS Installer - vpc-and-vpn module
+# Fury AKS Installer - state module
 
 <!-- <KFD-DOCS> -->
 
@@ -8,15 +8,15 @@
 
 | Name | Version |
 |------|---------|
-| terraform | = 0.15.4 |
-| azurerm | 3.44.1 |
+| terraform | >= 1.3 |
+| azure cli | >= 2.48.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| azurerm | 3.44.1 |
-| random | 3.4.3 |
+| azurerm | ~> 3.44 |
+| local | ~> 2.0.0 |
 
 ## Inputs
 
