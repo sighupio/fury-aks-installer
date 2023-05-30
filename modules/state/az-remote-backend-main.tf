@@ -1,5 +1,5 @@
 # Generate a random storage name
-resource "random_string" "tf-name" {
+resource "random_string" "tf_name" {
   length  = 8
   upper   = false
   numeric = true
@@ -8,7 +8,7 @@ resource "random_string" "tf-name" {
 }
 
 # Create a Resource Group for the Terraform State File
-resource "azurerm_resource_group" "state-rg" {
+resource "azurerm_resource_group" "state_rg" {
   name     = "${lower(var.company)}-tfstate-rg"
   location = var.location
 
@@ -24,13 +24,13 @@ resource "azurerm_resource_group" "state-rg" {
 }
 
 # Create a Storage Account for the Terraform State File
-resource "azurerm_storage_account" "state-sta" {
-  depends_on = [azurerm_resource_group.state-rg]
+resource "azurerm_storage_account" "state_sta" {
+  depends_on = [azurerm_resource_group.state_rg]
 
   # Set the name of the storage account using the company name and a random string
-  name                      = "${lower(var.company)}tf${random_string.tf-name.result}"
-  resource_group_name       = azurerm_resource_group.state-rg.name
-  location                  = azurerm_resource_group.state-rg.location
+  name                      = "${lower(var.company)}tf${random_string.tf_name.result}"
+  resource_group_name       = azurerm_resource_group.state_rg.name
+  location                  = azurerm_resource_group.state_rg.location
   account_kind              = "StorageV2"
   account_tier              = "Standard"
   access_tier               = "Hot"
@@ -49,10 +49,10 @@ resource "azurerm_storage_account" "state-sta" {
 }
 
 # Create a Storage Container for the Core State File
-resource "azurerm_storage_container" "core-container" {
-  depends_on = [azurerm_storage_account.state-sta]
+resource "azurerm_storage_container" "core_container" {
+  depends_on = [azurerm_storage_account.state_sta]
 
   # Set the name of the storage container and the storage account it belongs to
   name                 = "core-tfstate"
-  storage_account_name = azurerm_storage_account.state-sta.name
+  storage_account_name = azurerm_storage_account.state_sta.name
 }
