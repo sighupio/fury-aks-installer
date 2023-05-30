@@ -1,7 +1,3 @@
-module "os" {
-  source       = "./os"
-  vm_os_simple = var.vpn_os
-}
 resource "random_id" "vpn-sa" {
   keepers = {
     vm_hostname = "${var.name}-bastion"
@@ -28,9 +24,9 @@ resource "azurerm_virtual_machine" "vpn-vm-linux" {
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = false
   storage_image_reference {
-    offer     = "UbuntuServer"
+    offer     = "0001-com-ubuntu-server-jammy"
     publisher = "Canonical"
-    sku       = "18.04-LTS"
+    sku       = "22_04-lts"
     version   = "latest"
   }
   storage_os_disk {
@@ -85,7 +81,7 @@ resource "azurerm_network_security_group" "vpn" {
 }
 resource "azurerm_network_security_rule" "vpn" {
   count                       = var.remote_port != "" ? 1 : 0
-  name                        = "allow_remote_${coalesce(var.remote_port, module.os.calculated_remote_port)}_in_all"
+  name                        = "allow_remote_${var.remote_port}_in_all"
   resource_group_name         = azurerm_resource_group.network_rg.name
   description                 = "Allow remote protocol in from all locations"
   priority                    = 101
@@ -93,7 +89,7 @@ resource "azurerm_network_security_rule" "vpn" {
   access                      = "Allow"
   protocol                    = "*"
   source_port_range           = "*"
-  destination_port_range      = coalesce(var.remote_port, module.os.calculated_remote_port)
+  destination_port_range      = var.remote_port
   source_address_prefixes     = var.source_address_prefixes
   destination_address_prefix  = "*"
   network_security_group_name = azurerm_network_security_group.vpn.name
