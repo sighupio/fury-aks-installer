@@ -17,9 +17,17 @@ export ARM_CLIENT_SECRET="<service_principal_password>"
 # Or you can login using Azure CLI and (in case) switch to your target subscription
 az login
 az account set -s "<azure_subscription_id>"
+az aks install-cli
 
-# Bring up the network and bastion
-cd examples/networking
+# Bring up the network
+cd examples/vnet
+cp main.auto.tfvars.dist main.auto.tfvars
+# TASK: fill in main.auto.tfvars with your data
+terraform init
+terraform apply
+
+# Bring up the bastion
+cd ../vpn
 cp main.auto.tfvars.dist main.auto.tfvars
 # TASK: fill in main.auto.tfvars with your data
 terraform init

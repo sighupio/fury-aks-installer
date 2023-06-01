@@ -1,0 +1,8 @@
+name = "fury"
+virtual_network_resource_group = "fury-network-rg"
+virtual_network_name = "fury"
+subnet_name = "fury-bastion"
+tags = {
+    distribution = "fury"
+    environment = "example"
+}

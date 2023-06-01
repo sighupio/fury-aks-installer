@@ -12,18 +12,14 @@ provider "azurerm" {
   }
 }
 
-data "azurerm_resource_group" "network" {
-  name = "aks-installer-network-rg"
-}
-
 module "my_cluster" {
   source = "../../modules/aks"
 
   cluster_version             = "1.25.6"
-  cluster_name                = "aks-installer"
-  network_resource_group_name = data.azurerm_resource_group.network.name
-  network                     = var.network
-  subnetworks                 = var.subnetworks
+  cluster_name                = var.cluster_name
+  network_resource_group_name = var.virtual_network_resource_group
+  network                     = var.virtual_network_name
+  subnetworks                 = var.subnet_names
   ssh_public_key              = file("~/.ssh/id_rsa.pub")
   dmz_cidr_range              = "11.11.0.0/16"
   resource_group_name         = var.resource_group_name
