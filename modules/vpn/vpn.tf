@@ -10,7 +10,7 @@ locals {
     openvpn_port           = var.vpn_port,
     openvpn_subnet_network = cidrhost(var.vpn_subnetwork_cidr, 0),
     openvpn_subnet_netmask = cidrnetmask(var.vpn_subnetwork_cidr),
-    openvpn_routes         = [{ "network" : cidrhost(var.network_cidr, 0), "netmask" : cidrnetmask(var.network_cidr) }, { "network" : "168.63.129.16", "netmask" : "255.255.255.255" }],
+    openvpn_routes         = [{ "network" : cidrhost(data.azurerm_virtual_network.network.address_space[0], 0), "netmask" : cidrnetmask(data.azurerm_virtual_network.network.address_space[0]) }, { "network" : "168.63.129.16", "netmask" : "255.255.255.255" }],
     openvpn_dns_servers    = ["168.63.129.16"], # Azure Private DNS IP
     openvpn_dhparam_bits   = var.vpn_dhparams_bits,
     furyagent_version      = "v0.3.0"
@@ -42,7 +42,7 @@ resource "azurerm_network_security_rule" "bastion_openvpn_tcp" {
   destination_port_range      = "1194"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_resource_group.network_rg.name
+  resource_group_name         = data.azurerm_resource_group.network_rg.name
   network_security_group_name = azurerm_network_security_group.vpn.name
 }
 resource "azurerm_network_security_rule" "bastion_openvpn_udp" {
@@ -55,7 +55,7 @@ resource "azurerm_network_security_rule" "bastion_openvpn_udp" {
   destination_port_range      = "1194"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_resource_group.network_rg.name
+  resource_group_name         = data.azurerm_resource_group.network_rg.name
   network_security_group_name = azurerm_network_security_group.vpn.name
 }
 # Furyagent
@@ -86,9 +86,9 @@ resource "null_resource" "ssh_users" {
 }
 # Storage account
 resource "azurerm_storage_account" "furyagent" {
-  name                      = replace("${var.name}furyagent","-","")
-  resource_group_name       = azurerm_resource_group.network_rg.name
-  location                  = azurerm_resource_group.network_rg.location
+  name                      = replace("${var.name}furyagent", "-", "")
+  resource_group_name       = data.azurerm_resource_group.network_rg.name
+  location                  = data.azurerm_resource_group.network_rg.location
   account_kind              = "BlobStorage"
   account_tier              = "Standard"
   account_replication_type  = "GRS"

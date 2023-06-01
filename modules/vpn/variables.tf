@@ -1,23 +1,18 @@
-variable "vnet_cidr" {
-  type        = string
-  description = "The CIDR block for the VPC network"
-  default     = "10.100.0.0/16"
+variable "virtual_network_resource_group" {
+  description = "Name of the resource group where the Virtual Network is located"
+  type = string
 }
-# Azure location variable
-variable "location" {
-  type        = string
-  description = "Azure region where the resource group will be created"
-  # Default value set to "westeurope"
-  default = "westeurope"
+variable "virtual_network_name" {
+  description = "Name of the Virtual Network where nodes will be located"
+  type = string
+}
+variable "subnet_name" {
+  description = "Name of the Subnet where nodes will be located"
+  type = string
 }
 variable "name" {
   description = "Name of the resources. Used as cluster name"
   type        = string
-}
-variable "network_cidr" {
-  description = "VPC Network CIDR"
-  type        = string
-  default     = "10.100.0.0/16"
 }
 variable "tags" {
   description = "A map of tags to add to all resources"
@@ -33,11 +28,6 @@ variable "vpn_port" {
   description = "VPN Server Port"
   type        = number
   default     = 1194
-}
-variable "vpn_os" {
-  description = "VPN Operative System"
-  type        = string
-  default     = "UbuntuServer"
 }
 variable "vpn_operator_name" {
   description = "VPN operator name. Used to log into the instance via SSH"
@@ -92,12 +82,6 @@ variable "source_address_prefixes" {
   description = "(Optional) List of source address prefixes allowed to access var.remote_port."
   type        = list(string)
   default     = ["0.0.0.0/0"]
-}
-
-variable "enforce_private_link" {
-  type        = bool
-  description = "(Optional) Enable or Disable enforcing private link connections."
-  default     = true
 }
 
 variable "vpn_bastions" {

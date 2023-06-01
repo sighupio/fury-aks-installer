@@ -7,8 +7,8 @@ resource "random_id" "vpn-sa" {
 resource "azurerm_storage_account" "vpn-sa" {
   count                    = var.boot_diagnostics ? 1 : 0
   name                     = "bootdiag${lower(random_id.vpn-sa.hex)}"
-  resource_group_name      = azurerm_resource_group.network_rg.name
-  location                 = azurerm_resource_group.network_rg.location
+  resource_group_name      = data.azurerm_resource_group.network_rg.name
+  location                 = data.azurerm_resource_group.network_rg.location
   account_tier             = element(split("_", var.boot_diagnostics_sa_type), 0)
   account_replication_type = element(split("_", var.boot_diagnostics_sa_type), 1)
   tags                     = var.tags
@@ -16,8 +16,8 @@ resource "azurerm_storage_account" "vpn-sa" {
 resource "azurerm_virtual_machine" "vpn-vm-linux" {
   name                             = "${var.name}-bastion-${count.index}"
   count                            = var.vpn_bastions
-  resource_group_name              = azurerm_resource_group.network_rg.name
-  location                         = azurerm_resource_group.network_rg.location
+  resource_group_name              = data.azurerm_resource_group.network_rg.name
+  location                         = data.azurerm_resource_group.network_rg.location
   availability_set_id              = azurerm_availability_set.vm.id
   vm_size                          = var.vm_size
   network_interface_ids            = [element(azurerm_network_interface.vpn.*.id, count.index)]
@@ -57,8 +57,8 @@ resource "azurerm_virtual_machine" "vpn-vm-linux" {
 }
 resource "azurerm_availability_set" "vm" {
   name                         = "${var.name}-avset"
-  resource_group_name          = azurerm_resource_group.network_rg.name
-  location                     = azurerm_resource_group.network_rg.location
+  resource_group_name          = data.azurerm_resource_group.network_rg.name
+  location                     = data.azurerm_resource_group.network_rg.location
   platform_fault_domain_count  = 2
   platform_update_domain_count = 2
   managed                      = true
@@ -67,22 +67,22 @@ resource "azurerm_availability_set" "vm" {
 resource "azurerm_public_ip" "vpn" {
   count               = var.vpn_bastions
   name                = "${var.name}-pip-${count.index}"
-  resource_group_name = azurerm_resource_group.network_rg.name
-  location            = azurerm_resource_group.network_rg.location
+  resource_group_name = data.azurerm_resource_group.network_rg.name
+  location            = data.azurerm_resource_group.network_rg.location
   allocation_method   = "Static"
   sku                 = "Basic"
   tags                = var.tags
 }
 resource "azurerm_network_security_group" "vpn" {
   name                = "${var.name}-nsg"
-  resource_group_name = azurerm_resource_group.network_rg.name
-  location            = azurerm_resource_group.network_rg.location
+  resource_group_name = data.azurerm_resource_group.network_rg.name
+  location            = data.azurerm_resource_group.network_rg.location
   tags                = var.tags
 }
 resource "azurerm_network_security_rule" "vpn" {
   count                       = var.remote_port != "" ? 1 : 0
   name                        = "allow_remote_${var.remote_port}_in_all"
-  resource_group_name         = azurerm_resource_group.network_rg.name
+  resource_group_name         = data.azurerm_resource_group.network_rg.name
   description                 = "Allow remote protocol in from all locations"
   priority                    = 101
   direction                   = "Inbound"
@@ -96,7 +96,7 @@ resource "azurerm_network_security_rule" "vpn" {
 }
 resource "azurerm_network_security_rule" "open-vpn" {
   name                        = "allow_remote_1194_in_all"
-  resource_group_name         = azurerm_resource_group.network_rg.name
+  resource_group_name         = data.azurerm_resource_group.network_rg.name
   description                 = "Allow remote protocol in from all locations"
   priority                    = 110
   direction                   = "Inbound"
@@ -111,19 +111,16 @@ resource "azurerm_network_security_rule" "open-vpn" {
 resource "azurerm_network_interface" "vpn" {
   count                         = var.vpn_bastions
   name                          = "${var.name}-nic-${count.index}"
-  resource_group_name           = azurerm_resource_group.network_rg.name
-  location                      = azurerm_resource_group.network_rg.location
+  resource_group_name           = data.azurerm_resource_group.network_rg.name
+  location                      = data.azurerm_resource_group.network_rg.location
   enable_accelerated_networking = false
   ip_configuration {
     name                          = "${var.name}-ip"
-    subnet_id                     = module.network.vnet_subnets[0]
+    subnet_id                     = data.azurerm_subnet.bastion_subnet.id
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = length(azurerm_public_ip.vpn.*.id) > 0 ? element(concat(azurerm_public_ip.vpn.*.id, tolist([""])), count.index) : ""
   }
   tags = var.tags
-  depends_on = [
-    module.network.vnet_subnets
-  ]
 }
 resource "azurerm_network_interface_security_group_association" "vpn" {
   count                     = var.vpn_bastions
