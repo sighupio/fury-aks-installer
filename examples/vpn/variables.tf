@@ -16,5 +16,5 @@ variable "subnet_name" {
 }
 
 variable "tags" {
-  type    = map(any)
+  type = map(any)
 }

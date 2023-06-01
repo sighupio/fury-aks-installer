@@ -7,7 +7,7 @@ variable "vnet_cidr" {
 variable "location" {
   type        = string
   description = "Azure region where the resource group will be created"
-  default = "westeurope"
+  default     = "westeurope"
 }
 variable "name" {
   description = "Name of the resources. Used as cluster name"

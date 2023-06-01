@@ -1,14 +1,14 @@
 variable "virtual_network_resource_group" {
   description = "Name of the resource group where the Virtual Network is located"
-  type = string
+  type        = string
 }
 variable "virtual_network_name" {
   description = "Name of the Virtual Network where nodes will be located"
-  type = string
+  type        = string
 }
 variable "subnet_name" {
   description = "Name of the Subnet where nodes will be located"
-  type = string
+  type        = string
 }
 variable "name" {
   description = "Name of the resources. Used as cluster name"

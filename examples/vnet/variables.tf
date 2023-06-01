@@ -4,9 +4,9 @@ variable "name" {
 }
 
 variable "vnet_cidr" {
-  type    = string
+  type = string
 }
 
 variable "tags" {
-  type    = map(any)
+  type = map(any)
 }
