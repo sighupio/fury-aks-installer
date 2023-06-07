@@ -5,7 +5,12 @@ variable "cluster_name" {
 
 variable "cluster_version" {
   type        = string
-  description = "Kubernetes Cluster Version. Look at the cloud providers documentation to discover available versions. EKS example -> 1.16, GKE example -> 1.16.8-gke.9"
+  description = "Kubernetes Cluster Version. Look at the cloud providers documentation to discover available versions. EKS example -> 1.25, GKE example -> 1.25.7-gke.1000"
+}
+
+variable "network_resource_group_name" {
+  type        = string
+  description = "Resource group where Network is located"
 }
 
 variable "network" {
@@ -14,7 +19,7 @@ variable "network" {
 }
 
 variable "subnetworks" {
-  type        = list
+  type        = list(string)
   description = "List of subnets where the cluster will be hosted"
 }
 
@@ -42,18 +47,22 @@ variable "node_pools" {
     os            = optional(string)
     max_pods      = optional(number) # null to use default upstream configuration
     volume_size   = number
-    subnetworks   = list(string) # null to use default upstream configuration
+    subnetworks   = optional(list(string), []) # null to use default upstream configuration
     labels        = map(string)
     taints        = list(string)
     tags          = map(string)
-    additional_firewall_rules = list(object({
-      name        = string
-      direction   = string
-      cidr_block  = string
-      protocol    = string
-      ports       = string
-      tags        = map(string)
-    }))
+    additional_firewall_rules = optional(
+      list(
+        object({
+          name       = string
+          direction  = string
+          cidr_block = string
+          protocol   = string
+          ports      = string
+          tags       = map(string)
+        })
+      ),
+    [])
   }))
   default = []
 }
@@ -63,8 +72,19 @@ variable "resource_group_name" {
   description = "Resource group name where every resource will be placed. Required only in AKS installer (*)"
 }
 
+variable "location" {
+  type        = string
+  description = "Resource group location where every resource will be placed. Required only in AKS installer (*)"
+}
+
+variable "admin_group_object_ids" {
+  type        = list(string)
+  description = "User or group to be enabled as admin"
+  default     = []
+}
+
 variable "tags" {
-  type        = map
+  type        = map(string)
   description = "The tags to apply to all resources"
   default     = {}
 }

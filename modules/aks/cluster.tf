@@ -2,7 +2,7 @@
 data "azurerm_subnet" "aks" {
   name                 = var.node_pools[0].subnetworks != null && length(var.node_pools[0].subnetworks) > 0 ? var.node_pools[0].subnetworks[0] : var.subnetworks[0]
   virtual_network_name = var.network
-  resource_group_name  = data.azurerm_resource_group.aks.name
+  resource_group_name  = data.azurerm_resource_group.network.name
 }
 
 # Node Pool subnets and security Groups
@@ -10,12 +10,18 @@ data "azurerm_subnet" "node_pools" {
   count                = length(var.node_pools)
   name                 = var.node_pools[count.index].subnetworks != null && length(var.node_pools[count.index].subnetworks) > 0 ? var.node_pools[count.index].subnetworks[0] : var.subnetworks[0]
   virtual_network_name = var.network
-  resource_group_name  = data.azurerm_resource_group.aks.name
+  resource_group_name  = data.azurerm_resource_group.network.name
+}
+
+resource "azurerm_network_security_group" "aks" {
+  name                = "furyAksSecurityGroup"
+  location            = azurerm_resource_group.aks_rg.location
+  resource_group_name = azurerm_resource_group.aks_rg.name
 }
 
 # Security Rule enabling local.parsed_dmz_cidr_range to access the control plane endpoint. Cloud Installers v1.5.0
 resource "azurerm_network_security_rule" "aks" {
-  name                         = "${var.cluster_name} - Control Plane"
+  name                         = "${var.cluster_name}-control-plane"
   priority                     = 200
   direction                    = "Inbound"
   access                       = "Allow"
@@ -24,8 +30,8 @@ resource "azurerm_network_security_rule" "aks" {
   destination_port_range       = "443" # Control plane
   source_address_prefixes      = local.parsed_dmz_cidr_range
   destination_address_prefixes = data.azurerm_subnet.aks.address_prefixes
-  resource_group_name          = data.azurerm_resource_group.aks.name
-  network_security_group_name  = element(split("/", data.azurerm_subnet.aks.network_security_group_id), length(split("/", data.azurerm_subnet.aks.network_security_group_id)) - 1)
+  resource_group_name          = azurerm_resource_group.aks_rg.name
+  network_security_group_name  = azurerm_network_security_group.aks.name
 }
 
 # Custom firewall rules v1.5.0 in the cloud installers
@@ -42,8 +48,8 @@ locals {
         destination_port_range       = rule.ports
         source_address_prefixes      = rule.direction == "ingress" ? [rule.cidr_block] : element(data.azurerm_subnet.node_pools.*.address_prefixes, index(var.node_pools.*.name, nodePool.name))
         destination_address_prefixes = rule.direction == "egress" ? [rule.cidr_block] : element(data.azurerm_subnet.node_pools.*.address_prefixes, index(var.node_pools.*.name, nodePool.name))
-        resource_group_name          = data.azurerm_resource_group.aks.name
-        network_security_group_name  = element(split("/", element(data.azurerm_subnet.node_pools.*.network_security_group_id, index(var.node_pools.*.name, nodePool.name))), length(split("/", element(data.azurerm_subnet.node_pools.*.network_security_group_id, index(var.node_pools.*.name, nodePool.name)))) - 1)
+        resource_group_name          = azurerm_resource_group.aks_rg.name
+        network_security_group_name  = azurerm_network_security_group.aks.name
       }]
       ]
     ]
@@ -69,8 +75,8 @@ resource "azurerm_network_security_rule" "node_pools" {
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = var.cluster_name
   kubernetes_version  = var.cluster_version
-  resource_group_name = data.azurerm_resource_group.aks.name
-  location            = data.azurerm_resource_group.aks.location
+  resource_group_name = azurerm_resource_group.aks_rg.name
+  location            = azurerm_resource_group.aks_rg.location
   dns_prefix          = var.cluster_name
 
   default_node_pool {
@@ -90,35 +96,14 @@ resource "azurerm_kubernetes_cluster" "aks" {
     tags                  = merge(var.tags, var.node_pools[0].tags)
   }
 
-  service_principal {
-    client_id     = azuread_application.aks.application_id
-    client_secret = azuread_service_principal_password.aks.value
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.aks.id]
   }
 
-  addon_profile {
-    aci_connector_linux {
-      enabled = false
-    }
-    azure_policy {
-      enabled = false
-    }
-    http_application_routing {
-      enabled = false
-    }
-    kube_dashboard {
-      enabled = false
-    }
-    oms_agent {
-      enabled = false
-    }
-  }
+  azure_policy_enabled             = false
+  http_application_routing_enabled = false
 
-  # api_server_authorized_ip_ranges is not compatible with private clusters.
-  # Maybe we should consider to create some Security Groups around the
-  # control-plane and the node_pools
-  # api_server_authorized_ip_ranges = [local.parsed_dmz_cidr_range]
-
-  enable_pod_security_policy = false
 
   linux_profile {
     admin_username = "ubuntu"
@@ -143,26 +128,23 @@ resource "azurerm_kubernetes_cluster" "aks" {
     service_cidr       = "10.10.0.0/16"
   }
 
-
-  node_resource_group = "${data.azurerm_resource_group.aks.name}-nodes"
+  node_resource_group = "${azurerm_resource_group.aks_rg.name}-nodes"
 
   private_cluster_enabled = true
 
   tags = var.tags
 
-  role_based_access_control {
-    enabled = true
-
-    azure_active_directory {
-      client_app_id     = azuread_application.aad_client.application_id
-      server_app_id     = azuread_application.aad_server.application_id
-      server_app_secret = azuread_service_principal_password.aad_server.value
-    }
+  azure_active_directory_role_based_access_control {
+    managed                = true
+    azure_rbac_enabled     = true
+    admin_group_object_ids = var.admin_group_object_ids
   }
 
-  lifecycle {
-    ignore_changes = [service_principal]
-  }
+  role_based_access_control_enabled = true
+
+  workload_identity_enabled = true
+  oidc_issuer_enabled       = true
+
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "aks" {

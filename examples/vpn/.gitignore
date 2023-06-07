@@ -1,0 +1,6 @@
+secrets
+.terraform
+*.ovpn
+ssh-users.yml
+terraform.plan
+terraform.tfstate

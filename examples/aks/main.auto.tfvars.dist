@@ -1,0 +1,6 @@
+resource_group_name = "fury-aks-rg"
+virtual_network_resource_group = "fury-network-rg"
+virtual_network_name = "fury"
+subnet_names = ["fury-aks"]
+location = "westeurope"
+cluster_name = "fury"

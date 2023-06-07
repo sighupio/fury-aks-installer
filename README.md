@@ -37,7 +37,7 @@ The [AKS module][aks-module] deploys a **private control plane** cluster, where 
 
 - **Azure CLI** = `2.32.0`
 - **Azure** account with enough permission to create an AKS Cluster.
-- **terraform** = `0.15.4`
+- **terraform** = `>=1.3.0`
 - `ssh` or **OpenVPN Client** - [Tunnelblick][tunnelblick] (on macOS) or [OpenVPN Connect][openvpn-connect] (for other OS) are recommended.
 
 The [AKS module][aks-module] expects all the necessary networking infrastructure in place:
@@ -45,7 +45,7 @@ The [AKS module][aks-module] expects all the necessary networking infrastructure
 - A private network with a subnetwork for the AKS cluster and one for the bastion host
 - Bastion host with OpenVPN installed
 
-Please refer to the [example][example/networking] for the sample code to create the necessary infrastructure.
+Please refer to the [examples][examples/networking] for the sample code to create the necessary infrastructure.
 
 ### Create AKS Cluster
 
