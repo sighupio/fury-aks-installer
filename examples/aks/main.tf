@@ -15,13 +15,13 @@ provider "azurerm" {
 module "my_cluster" {
   source = "../../modules/aks"
 
-  cluster_version             = "1.25.6"
+  cluster_version             = var.cluster_version
   cluster_name                = var.cluster_name
   network_resource_group_name = var.virtual_network_resource_group
   network                     = var.virtual_network_name
   subnetworks                 = var.subnet_names
-  ssh_public_key              = file("~/.ssh/id_rsa.pub")
-  dmz_cidr_range              = "11.11.0.0/16"
+  ssh_public_key              = var.ssh_public_key
+  dmz_cidr_range              = "0.0.0.0/0"
   resource_group_name         = var.resource_group_name
   location                    = var.location
   tags                        = {}
@@ -35,7 +35,7 @@ module "my_cluster" {
       volume_size : 100
       labels : {
         "sighup.io/role" : "app"
-        "sighup.io/fury-release" : "v1.25.2"
+        "sighup.io/environment" : "test"
       }
       taints : []
       tags : {}
@@ -48,7 +48,10 @@ module "my_cluster" {
       max_size : 1
       instance_type : "Standard_DS2_v2"
       volume_size : 50
-      labels : {}
+      labels : {
+        "sighup.io/role" : "extra"
+        "sighup.io/environment" : "test"
+      }
       taints : [
         "sighup.io/role=app:NoSchedule",
       ]
