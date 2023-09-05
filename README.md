@@ -1,7 +1,9 @@
+<!-- markdownlint-disable MD033 -->
 <h1>
     <img src="./docs/assets/fury_installer.png?raw=true" align="left" width="105" style="margin-right: 15px"/>
     Fury AKS Installer
 </h1>
+<!-- markdownlint-enable MD033 -->
 
 ![Release](https://img.shields.io/github/v/release/sighupio/fury-aks-installer?label=Latest%20Release)
 ![License](https://img.shields.io/github/license/sighupio/fury-aks-installer?label=License)
@@ -15,11 +17,14 @@ If you are new to Kubernetes Fury please refer to the [official documentation][k
 
 ## Modules
 
-The installer is composed of the following terraform modules:
+The installer is composed of four terraform modules:
 
-|            Module             |                  Description                   |
-| ----------------------------- | ---------------------------------------------- |
-| [AKS][aks-module]             | Deploy a AKS cluster                           |
+|            Module             |                       Description                      |
+| ----------------------------- | ------------------------------------------------------ |
+| [VNet][vnet-module]           | Deploy the necessary networking infrastructure         |
+| [VPN][vpn-module]             | Deploy the a VPN Server to connect to private clusters |
+| [AKS][aks-module]             | Deploy the AKS cluster                                 |
+| [State][state-module]         | Deploy the Backend for Terraform State                 |
 
 Click on each module to see its full documentation.
 
@@ -31,55 +36,54 @@ Click on each module to see its full documentation.
 
 The [AKS module][aks-module] deploys a **private control plane** cluster, where the control plane endpoint is not publicly accessible.
 
+The [VNet module][vnet-module] setups all the necessary networking infrastructure.
+
+The [VPN module][vpn-module] setups one or more bastion hosts with an OpenVPN server.
+
+The bastion host includes an OpenVPN instance easily manageable by using [furyagent][furyagent] to provide access to the cluster.
+
+> 🕵🏻‍♂️ [Furyagent][furyagent] is a tool developed by SIGHUP to manage OpenVPN and SSH user access to the bastion host.
+
 ## Usage
 
 ### Requirements
 
-- **Azure CLI** = `2.32.0`
+- **Azure CLI** >= `2.48.1`
 - **Azure** account with enough permission to create an AKS Cluster.
 - **terraform** = `>=1.3.0`
 - `ssh` or **OpenVPN Client** - [Tunnelblick][tunnelblick] (on macOS) or [OpenVPN Connect][openvpn-connect] (for other OS) are recommended.
 
-The [AKS module][aks-module] expects all the necessary networking infrastructure in place:
-
-- A private network with a subnetwork for the AKS cluster and one for the bastion host
-- Bastion host with OpenVPN installed
-
-Please refer to the [examples][examples/networking] for the sample code to create the necessary infrastructure.
-
 ### Create AKS Cluster
 
-To create the cluster via the installer:
+To create the cluster via the installers:
 
-1. Deploy the networking infrastructure and the bastion host
-2. Install OpenVPN on the bastion
-3. Configure access to the OpenVPN instance
-4. Connect to the OpenVPN instance
-5. Use the [AKS module][aks-module] to deploy the EKS cluster
+1. (optional) Use the [State module][state-module] to deploy the storage account and container to store terraform state
 
-⚠️ **The first time you try to create the cluster using the installer you will get an error.**
+2. Use the [VNet module][vnet-module] to deploy the networking infrastructure
 
-This is expected because the installer is creating an application in order to use Azure Active Directory (AAD) for user authentication.
-Since this application will need to access AAD, a tenant admin must manually approve the requested API permissions as a security measure.
+3. (optional) Use the [VPN module][vpn-module] to deploy the openvpn bastion host
 
-To grant the application the needed permissions, go to the Azure Portal:
+4. (optional) Configure access to the OpenVPN instance of the bastion host via [furyagent][furyagent]
 
-![Azure Portal](docs/assets/azure_portal.png)
+5. (optional) Connect to the OpenVPN instance
 
-1. Select Azure Active Directory > App registrations > All applications
-2. Choose the application named <cluster_name>-aks-aad-server
-3. In the left pane of the application, select API permissions
-4. Select Grant admin consent, this button will not be available if your account is not a tenant admin.
+6. Use the [AKS module][aks-module] to deploy the AKS cluster
+
+Please refer to each module documentation and the [examples](examples/) folder for more details.
 
 ## Useful links
 
 - [AKS pricing](https://azure.microsoft.com/en-us/pricing/details/kubernetes-service/)
 - [Committed use Instances pricing](https://azure.microsoft.com/en-us/pricing/details/virtual-machines/linux/)
+- [Identity in AKS](https://learn.microsoft.com/en-us/azure/aks/concepts-identity)
 
 <!-- Links -->
 
 [aks-installer-docs]: https://docs.kubernetesfury.com/docs/installers/managed/aks/
 [aks-module]: https://github.com/sighupio/fury-aks-installer/tree/master/modules/aks
+[vnet-module]: https://github.com/sighupio/fury-aks-installer/tree/master/modules/vnet
+[vpn-module]: https://github.com/sighupio/fury-aks-installer/tree/master/modules/vpn
+[state-module]: https://github.com/sighupio/fury-aks-installer/tree/master/modules/state
 [kfd-docs]: https://docs.kubernetesfury.com/docs/distribution/
 
 [furyagent]: https://github.com/sighupio/furyagent
@@ -89,13 +93,9 @@ To grant the application the needed permissions, go to the Azure Portal:
 <!-- </KFD-DOCS> -->
 <!-- <FOOTER> -->
 
-## Contributing
-
-Before contributing, please read first the [Contributing Guidelines](docs/CONTRIBUTING.md).
-
 ### Reporting Issues
 
-In case you experience any problem with the module, please [open a new issue](https://github.com/sighupio/fury-kubernetes-networking/issues/new/choose).
+In case you experience any problem with the module, please [open a new issue](https://github.com/sighupio/fury-aks-installer/issues/new).
 
 ## License
 
